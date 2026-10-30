@@ -475,7 +475,7 @@ function calc() {
   $('#dweeks').textContent = `About ${wk}–${wk + 2} weeks on site, after design and permits`;
   const w = [2, ri === 3 ? 1.5 : 3, 1, 3, 1, ti + 3]; [...$('#dtl').children].forEach((d, k) => d.style.flexGrow = w[k]);
   const town = $('#dtown').value.trim() || 'my town';
-  $('#dmsg').textContent = `Hi Kestrel, I'm in ${town}. Thinking about a ${r.n.toLowerCase()} (${size} sq ft, ${TIERS[ti][0].toLowerCase()} finishes). Your site showed ${money(target * .88)}–${money(target * 1.12)}. Can we talk?`;
+  $('#dmsg').textContent = `Hi Kestrel, I'm in ${town}. Thinking about ${/^[aeiou]/i.test(r.n) ? "an" : "a"} ${r.n.toLowerCase()} (${size} sq ft, ${TIERS[ti][0].toLowerCase()} finishes). Your site showed ${money(target * .88)}–${money(target * 1.12)}. Can we talk?`;
 }
 $('#dform').addEventListener('input', calc); $('#dform').addEventListener('change', calc); calc();
 $('#dcopy').addEventListener('click', async () => { const t = $('#dmsg').textContent; try { await navigator.clipboard.writeText(t); $('#dcopy').textContent = 'Copied. Text it to (978) 555-0142'; } catch { const s = getSelection(), rg = document.createRange(); rg.selectNodeContents($('#dmsg')); s.removeAllRanges(); s.addRange(rg); $('#dcopy').textContent = 'Selected. Copy it and text (978) 555-0142'; } });
