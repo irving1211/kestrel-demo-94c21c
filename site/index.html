@@ -194,6 +194,20 @@ footer.foot p { margin: 0 0 8px; max-width: 80ch; }
 .bar .btn.line { color: #fff; }
 @media (min-width: 900px) { .bar { display: none; } }
 @media (prefers-reduced-motion: reduce) { .bar, .how li, .tl div { transition: none; } }
+/* Work section in the site's own palette: the drawing stays blueprint blue, the section matches the page. */
+#work { background: var(--ink-2); color: var(--paper); border-block: 1px solid var(--line); }
+#work .kick { color: var(--muted); }
+#work .h2 { color: var(--paper); }
+#work .h2 i { color: var(--lumber); }
+#work .lede, #work .scope { color: var(--muted); }
+.sheetwrap { border-color: var(--line); border-radius: 14px 14px 0 0; }
+.tblock { border-color: var(--line); border-radius: 0 0 14px 14px; background: var(--ink); }
+.tblock div { border-right-color: var(--line); color: var(--muted); }
+.tblock b { color: var(--paper); }
+.sh { border-color: var(--line); background: var(--ink); color: var(--muted); border-radius: 12px; }
+.sh[aria-pressed="true"] { border-color: var(--signal); box-shadow: 0 0 0 1px var(--signal) inset; }
+.sh b { color: var(--paper); }
+#work .btn.call { background: var(--signal); color: #1a0d05; }
 </style>
 </head>
 <body>
