@@ -87,8 +87,9 @@ function size() { const d = Math.min(devicePixelRatio || 1, 2); cv.width = Math.
 function frame(im) {
   const W = cv.width, H = cv.height, push = 1 + P * .07, fx = .45, fy = .55;
   if (W / H >= 1) { const s = Math.max(W / im.width, H / im.height) * push, w = im.width * s, h = im.height * s; return { x: Math.min(0, Math.max(W - w, W / 2 - w * fx)), y: (H - h) * fy, w, h, phone: false }; }
-  const h = H * .62 * push, s = h / im.height, w = im.width * s;
-  return { x: Math.min(0, Math.max(W - w, W / 2 - w * fx)), y: H * .19 - (h - H * .62) / 2, w, h, phone: true };
+  // Phone: size by width so the whole house (about 6%-82% of the photo) fits across the screen.
+  const w = W * 1.42 * push, h = w * im.height / im.width;
+  return { x: W / 2 - w * .44, y: H * .42 - h * .55, w, h, phone: true };
 }
 function paint(ctx, im, f) { ctx.drawImage(im, f.x, f.y, f.w, f.h); }
 function draw() {
