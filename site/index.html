@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Kestrel Build Co.</title>
+<meta name="description" content="Demo site: a general contractor building new homes, additions, kitchens, basements and decks across Middlesex and Essex County.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: scroll-built hero, then blueprint project sheets, how a build goes, live estimate, service area. */
+:root {
+  color-scheme: dark;
+  --ink: #0d0f0c; --ink-2: #171a15; --line: #2a2d26;
+  --paper: #f4efe6; --muted: #b6b0a4;
+  --signal: #ff6a2b; --lumber: #e0b679;
+  --bp: #0e3359; --bp-2: #0b2a4a; --bp-line: #cfe6ff;
+  --sheet: #f6f3ee; --sheet-ink: #1b1a18; --sheet-mute: #6d675e;
+  --display: "Bricolage Grotesque", "Arial Narrow", system-ui, sans-serif;
+  --body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --serif: "Instrument Serif", Georgia, serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--ink); color: var(--paper); font-family: var(--body); font-size: 16px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+img { max-width: 100%; display: block; }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--signal); outline-offset: 3px; }
+.g { padding-left: max(18px, env(safe-area-inset-left, 0px)); padding-right: max(18px, env(safe-area-inset-right, 0px)); }
+.w { max-width: 1120px; margin: 0 auto; }
+.kick { font-family: var(--mono); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
+.h2 { font-family: var(--display); font-weight: 800; font-size: clamp(2rem, 7vw, 3.6rem); line-height: .98; letter-spacing: -.025em; }
+.lede { color: var(--muted); max-width: 54ch; margin: 12px 0 0; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 20px; border-radius: 12px; font-weight: 600; text-decoration: none; border: 0; cursor: pointer; font: inherit; font-weight: 600; }
+.btn.call { background: var(--signal); color: #1a0d05; }
+.btn.line { background: transparent; color: inherit; border: 1.5px solid currentColor; }
+.btn.sm { min-height: 44px; padding: 0 14px; font-size: .92rem; }
+.ctas { display: flex; flex-wrap: wrap; gap: 10px; }
+.sample { font-family: var(--mono); font-size: .68rem; letter-spacing: .06em; color: var(--muted); }
+section.band { padding-block: 72px; }
+
+/* ---------- header ---------- */
+.top { position: fixed; top: 0; left: 0; right: 0; z-index: 30; padding-top: env(safe-area-inset-top, 0px); background: linear-gradient(#0d0f0ce6, #0d0f0c00); transition: background .3s; }
+.top.solid { background: #0d0f0cf2; backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.top .w { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 12px; }
+.logo { display: flex; gap: 10px; align-items: center; font-family: var(--display); font-weight: 800; letter-spacing: .01em; text-decoration: none; }
+.logo svg { width: 28px; height: 28px; }
+.nav { display: none; gap: 22px; font-size: .92rem; color: #e7e1d6; }
+.nav a { text-decoration: none; }
+.nav a:hover { color: #fff; }
+@media (min-width: 900px) { .nav { display: flex; } }
+.top .num { display: none; font-family: var(--mono); font-size: .86rem; color: #e7e1d6; }
+@media (min-width: 700px) { .top .num { display: inline; } }
+.top .right { display: flex; align-items: center; gap: 14px; }
+
+/* ---------- rise hero ---------- */
+.rise { position: relative; height: 520vh; }
+.stick { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; }
+canvas#cv { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(transparent 55%, #0d0f0cf0 100%); }
+.hud { position: absolute; top: calc(78px + env(safe-area-inset-top, 0px)); left: max(16px, env(safe-area-inset-left, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; pointer-events: none; }
+.chip { display: grid; gap: 3px; padding: 10px 12px; background: #0d0f0cb3; border: 1px solid #ffffff1f; border-radius: 10px; backdrop-filter: blur(6px); }
+.chip b { font-family: var(--mono); font-size: 1.35rem; color: var(--lumber); line-height: 1; font-variant-numeric: tabular-nums; }
+.chip span { font-family: var(--mono); font-size: .64rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.steps { display: grid; gap: 6px; justify-items: end; font-family: var(--mono); font-size: .64rem; letter-spacing: .12em; text-transform: uppercase; }
+.steps i { font-style: normal; color: #ffffff59; display: flex; gap: 8px; align-items: center; transition: color .3s; }
+.steps i::after { content: ""; width: 7px; height: 7px; border-radius: 50%; border: 1px solid currentColor; }
+.steps i.done { color: #ffffffb3; } .steps i.done::after { background: currentColor; }
+.steps i.on { color: #fff; } .steps i.on::after { background: var(--signal); border-color: var(--signal); box-shadow: 0 0 0 4px #ff6a2b40; }
+.herocopy { position: absolute; left: 0; right: 0; bottom: 0; padding-bottom: calc(26px + env(safe-area-inset-bottom, 0px)); }
+.herocopy h1 { font-family: var(--display); font-weight: 800; font-size: clamp(2.3rem, 9.4vw, 5rem); line-height: .94; letter-spacing: -.028em; max-width: 13ch; }
+.herocopy p { margin: 10px 0 16px; color: #e7e1d6; max-width: 46ch; }
+.hint { font-family: var(--mono); font-size: .7rem; letter-spacing: .2em; text-transform: uppercase; color: #fff; margin-top: 14px; transition: opacity .4s; }
+.prog { position: absolute; left: 0; bottom: 0; height: 3px; background: var(--signal); width: 0; }
+.load { font-family: var(--mono); font-size: .64rem; letter-spacing: .12em; color: var(--muted); margin-top: 6px; min-height: 1em; }
+
+/* ---------- proof strip ---------- */
+.proof { border-block: 1px solid var(--line); background: var(--ink-2); }
+.proof .w { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: var(--line); }
+@media (min-width: 900px) { .proof .w { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.proof div { background: var(--ink-2); padding: 18px 14px; }
+.proof b { display: block; font-family: var(--display); font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1.1; }
+.proof span { font-size: .84rem; color: var(--muted); }
+
+/* ---------- B: blueprint projects ---------- */
+#work { background: var(--bp); color: var(--bp-line); }
+#work .kick { color: #9fc7ee; }
+#work .h2 { font-family: var(--serif); font-weight: 400; font-size: clamp(2.6rem, 10vw, 5.2rem); color: #fff; letter-spacing: -.01em; line-height: .92; }
+#work .h2 i { color: #9fd0ff; }
+#work .lede { color: #b9d6f2; }
+.sheetwrap { position: relative; margin-top: 22px; border: 1.5px solid #7fb4e6; border-radius: 4px; overflow: hidden; background: var(--bp-2); touch-action: pan-y; }
+.sheetwrap img { width: 100%; height: auto; }
+#bpc { position: absolute; inset: 0; width: 100%; height: 100%; }
+.handle { position: absolute; top: 0; bottom: 0; width: 2px; background: #fff; box-shadow: 0 0 18px #9fd0ff; pointer-events: none; }
+.handle::after { content: "⇆"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 42px; height: 42px; border-radius: 50%; background: #fff; color: var(--bp); display: grid; place-items: center; box-shadow: 0 6px 20px #0008; }
+#bprange { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: ew-resize; margin: 0; }
+.dim { position: absolute; font-family: var(--mono); font-size: clamp(.58rem, 1.8vw, .78rem); color: #fff; background: #0e3359cc; padding: 2px 6px; border: 1px solid #9fd0ff; pointer-events: none; }
+.tblock { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1.5px solid #7fb4e6; border-top: 0; font-family: var(--mono); font-size: .62rem; letter-spacing: .06em; text-transform: uppercase; }
+.tblock div { padding: 9px 8px; border-right: 1px solid #7fb4e6; min-width: 0; }
+.tblock div:last-child { border-right: 0; }
+.tblock b { display: block; color: #fff; font-size: .78rem; overflow-wrap: anywhere; }
+.scope { margin: 14px 0 0; color: #cfe2f5; max-width: 60ch; }
+.sheets { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 18px; }
+@media (min-width: 900px) { .sheets { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.sh { border: 1px solid #5d93c6; background: var(--bp-2); color: var(--bp-line); text-align: left; padding: 0; cursor: pointer; border-radius: 4px; overflow: hidden; font: inherit; }
+.sh[aria-pressed="true"] { border-color: #fff; box-shadow: 0 0 0 2px #fff inset; }
+.sh img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; filter: grayscale(1) contrast(1.2) brightness(.8) sepia(1) hue-rotate(170deg) saturate(2.4); transition: filter .4s; }
+.sh[aria-pressed="true"] img, .sh:hover img { filter: none; }
+.sh div { padding: 10px; font-family: var(--mono); font-size: .66rem; letter-spacing: .04em; }
+.sh b { display: block; color: #fff; font-family: var(--body); font-size: .98rem; letter-spacing: 0; }
+#work .btn.call { background: #fff; color: var(--bp); }
+
+/* ---------- how it goes ---------- */
+.how { display: grid; gap: 12px; margin-top: 26px; grid-template-columns: 1fr; counter-reset: s; }
+@media (min-width: 900px) { .how { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.how li { list-style: none; background: var(--ink-2); border: 1px solid var(--line); border-radius: 16px; padding: 18px; display: grid; gap: 8px; align-content: start; transition: border-color .4s, transform .4s; }
+.how li.lit { border-color: #ff6a2b80; transform: translateY(-2px); }
+.how .n { font-family: var(--mono); color: var(--signal); font-size: .8rem; letter-spacing: .1em; }
+.how h3 { font-family: var(--display); font-size: 1.3rem; font-weight: 700; }
+.how p { margin: 0; color: var(--muted); font-size: .95rem; }
+.how blockquote { margin: 4px 0 0; padding: 10px 12px; border-left: 2px solid var(--lumber); background: #ffffff08; border-radius: 0 8px 8px 0; font-size: .9rem; color: #e7e1d6; }
+.how blockquote footer { font-family: var(--mono); font-size: .62rem; color: var(--muted); margin-top: 6px; letter-spacing: .06em; }
+.how ol, ol.how { padding: 0; margin: 26px 0 0; }
+
+/* ---------- D: estimator ---------- */
+#price { background: var(--sheet); color: var(--sheet-ink); }
+#price .kick { color: var(--sheet-mute); }
+#price .lede { color: var(--sheet-mute); }
+.est { display: grid; gap: 18px; grid-template-columns: 1fr; margin-top: 24px; }
+@media (min-width: 900px) { .est { grid-template-columns: 1fr 1fr; align-items: start; } }
+.est fieldset { border: 0; padding: 0; margin: 0 0 18px; min-width: 0; }
+.est legend { font-family: var(--mono); font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--sheet-mute); margin-bottom: 8px; }
+.rooms { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.rooms label { position: relative; border-radius: 12px; overflow: hidden; aspect-ratio: 3 / 4; cursor: pointer; outline: 2px solid transparent; transition: outline-color .2s, transform .2s; }
+.rooms input, .tiers input { position: absolute; opacity: 0; }
+.rooms img { width: 100%; height: 100%; object-fit: cover; }
+.rooms span { position: absolute; left: 0; right: 0; bottom: 0; padding: 18px 6px 6px; color: #fff; font-weight: 600; font-size: .8rem; background: linear-gradient(transparent, #000b); }
+.rooms label:has(input:checked) { outline-color: var(--signal); transform: translateY(-2px); }
+.rooms label:has(input:focus-visible), .tiers label:has(input:focus-visible) { outline: 3px solid var(--sheet-ink); }
+input[type=range]#dsize { width: 100%; accent-color: var(--signal); min-height: 44px; }
+.sizev { font-family: var(--mono); font-size: .9rem; }
+.tiers { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.tiers label { position: relative; border: 1.5px solid #d8d1c6; border-radius: 12px; padding: 10px; cursor: pointer; background: #fff; min-height: 44px; }
+.tiers b { display: block; }
+.tiers small { color: var(--sheet-mute); font-size: .74rem; }
+.tiers label:has(input:checked) { border-color: var(--sheet-ink); box-shadow: 0 0 0 1px var(--sheet-ink); }
+#dtown { width: 100%; min-height: 48px; border: 1.5px solid #d8d1c6; border-radius: 12px; padding: 0 12px; background: #fff; color: var(--sheet-ink); font: inherit; }
+.out { position: sticky; top: calc(80px + env(safe-area-inset-top, 0px)); background: var(--sheet-ink); color: #fff; border-radius: 20px; padding: 20px; display: grid; gap: 14px; }
+.out .range { font-family: var(--display); font-weight: 800; font-size: clamp(2.1rem, 9vw, 3.4rem); letter-spacing: -.02em; line-height: 1; font-variant-numeric: tabular-nums; }
+.out .weeks { font-family: var(--mono); color: #ffcfb6; font-size: .9rem; }
+.tl { display: flex; height: 38px; border-radius: 8px; overflow: hidden; gap: 2px; }
+.tl div { position: relative; flex: 1; transition: flex-grow .6s cubic-bezier(.2,.8,.2,1); }
+.tl div::after { content: attr(data-n); position: absolute; left: 6px; top: 50%; transform: translateY(-50%); font-family: var(--mono); font-size: .6rem; color: #fff; white-space: nowrap; overflow: hidden; max-width: calc(100% - 8px); }
+.tl div:nth-child(1) { background: #5b5144; } .tl div:nth-child(2) { background: #6b5d4b; } .tl div:nth-child(3) { background: #a35a33; }
+.tl div:nth-child(4) { background: #c96a37; } .tl div:nth-child(5) { background: #7a6c58; } .tl div:nth-child(6) { background: #ff6a2b; }
+.out .note { font-size: .78rem; color: #c9c1b4; }
+.msg { background: #2b2722; border-radius: 12px; padding: 12px; font-family: var(--mono); font-size: .78rem; white-space: pre-wrap; color: #efe7da; }
+.out .btn.call { width: 100%; }
+
+/* ---------- area + closer ---------- */
+.area { display: grid; gap: 22px; grid-template-columns: 1fr; margin-top: 22px; }
+@media (min-width: 900px) { .area { grid-template-columns: 1fr 1fr; } }
+.county { background: var(--ink-2); border: 1px solid var(--line); border-radius: 16px; padding: 18px; }
+.county h3 { font-family: var(--display); font-size: 1.2rem; margin-bottom: 10px; }
+.towns { display: flex; flex-wrap: wrap; gap: 6px; }
+.towns span { font-size: .86rem; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--line); color: #e7e1d6; }
+.closer { text-align: left; }
+.closer .h2 { max-width: 14ch; }
+footer.foot { border-top: 1px solid var(--line); padding-block: 28px calc(96px + env(safe-area-inset-bottom, 0px)); color: var(--muted); font-size: .82rem; }
+footer.foot p { margin: 0 0 8px; max-width: 80ch; }
+
+/* ---------- sticky bar ---------- */
+.bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px max(12px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px)); background: #0d0f0cf2; border-top: 1px solid var(--line); transform: translateY(110%); transition: transform .3s; }
+.bar.on { transform: none; }
+.bar .btn.line { color: #fff; }
+@media (min-width: 900px) { .bar { display: none; } }
+@media (prefers-reduced-motion: reduce) { .bar, .how li, .tl div { transition: none; } }
+</style>
+</head>
+<body>
+
+<header class="top g" id="top"><div class="w">
+  <a class="logo" href="#"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 16 16 5l13 11" fill="none" stroke="#ff6a2b" stroke-width="2.6" stroke-linejoin="round"/><path d="M7 14v13M12 14v13M17 14v13M22 14v13M26 15v12M5 27h23" stroke="#ff6a2b" stroke-width="2"/></svg>Kestrel Build Co.</a>
+  <nav class="nav" aria-label="Sections"><a href="#work">Work</a><a href="#how">How it goes</a><a href="#price">Pricing</a><a href="#area">Where we build</a></nav>
+  <div class="right"><span class="num">(978) 555-0142</span><a class="btn call sm" href="tel:+19785550142">Call</a></div>
+</div></header>
+
+<main>
+<section class="rise" id="rise" aria-label="The build">
+  <div class="stick">
+    <canvas id="cv" role="img" aria-label="A house is built from a staked lot to a finished, landscaped home as you scroll"></canvas>
+    <div class="shade"></div>
+    <div class="hud">
+      <div class="chip"><b id="wk">Week 0</b><span>on site</span></div>
+      <div class="steps" id="steps"><i>Staked lot</i><i>Foundation</i><i>Framing</i><i>Closed in</i><i>Finishes</i><i>Landscaping</i><i>Move-in ready</i></div>
+    </div>
+    <div class="herocopy g"><div class="w">
+      <h1>From bare dirt to your front door.</h1>
+      <p>New homes, additions, kitchens, basements and decks across Middlesex and Essex County. One crew, first stake to last light switch.</p>
+      <div class="ctas"><a class="btn call" href="tel:+19785550142">Call (978) 555-0142</a><a class="btn line" href="#price" style="color:#fff">Price your project</a></div>
+      <div class="hint" id="hint">Scroll to build ↓</div>
+      <div class="load" id="load"></div>
+    </div></div>
+    <div class="prog" id="prog"></div>
+  </div>
+</section>
+
+<section class="proof g" aria-label="At a glance"><div class="w">
+  <div><b>5.0 ★</b><span>Google rating (sample)</span></div>
+  <div><b>Since 2012</b><span>Building in the valley (sample)</span></div>
+  <div><b>1 crew</b><span>Start to finish, no hand-offs</span></div>
+  <div><b>Licensed</b><span>MA CSL + HIC, fully insured (sample)</span></div>
+</div></section>
+
+<section class="band g" id="work"><div class="w">
+  <p class="kick">Recent work</p>
+  <h2 class="h2">Drawn first.<br><i>Then built.</i></h2>
+  <p class="lede">Every job starts on paper, so the price and the schedule hold. Drag across the drawing to see the finished room, or pick another project below.</p>
+  <div class="sheetwrap" id="bsheet">
+    <img id="bimg" alt="Finished project photo">
+    <canvas id="bpc" aria-hidden="true"></canvas>
+    <div id="bdims"></div>
+    <div class="handle" id="bhandle"></div>
+    <input type="range" id="bprange" min="0" max="100" value="100" aria-label="Wipe from the drawing to the finished room">
+  </div>
+  <div class="tblock" id="btitle"></div>
+  <p class="scope" id="bscope"></p>
+  <div class="sheets" id="bstrip"></div>
+  <div class="ctas" style="margin-top:22px"><a class="btn call" href="tel:+19785550142">Call about a project</a></div>
+</div></section>
+
+<section class="band g" id="how"><div class="w">
+  <p class="kick">How a Kestrel build goes</p>
+  <h2 class="h2">Four steps. No surprises.</h2>
+  <ol class="how" id="howlist">
+    <li><span class="n">01</span><h3>You call</h3><p>Tell us the room, the town and roughly what you want. We answer or call back the same day.</p><blockquote>“Ryan picked up on the first ring and was out the same week.”<footer>SAMPLE REVIEW · KITCHEN</footer></blockquote></li>
+    <li><span class="n">02</span><h3>We walk it and draw it</h3><p>A site visit, measurements and a drawing you can see before anything is torn out.</p><blockquote>“He drew the whole addition before quoting it. Nobody else did that.”<footer>SAMPLE REVIEW · ADDITION</footer></blockquote></li>
+    <li><span class="n">03</span><h3>One price, one schedule</h3><p>A written fixed price and a week-by-week plan. We pull the permits.</p><blockquote>“The final bill matched the quote to the dollar.”<footer>SAMPLE REVIEW · BASEMENT</footer></blockquote></li>
+    <li><span class="n">04</span><h3>One crew builds it</h3><p>The same people from demo to final walk-through, and a clean site every night.</p><blockquote>“They swept up every single day. Our kids never stepped on a nail.”<footer>SAMPLE REVIEW · DECK</footer></blockquote></li>
+  </ol>
+  <p class="sample" style="margin-top:12px">Sample reviews for this demo. Your site uses your real Google reviews, each next to the job it was about.</p>
+</div></section>
+
+<section class="band g" id="price"><div class="w">
+  <p class="kick">Price your project</p>
+  <h2 class="h2">What will it cost? Ask here first.</h2>
+  <p class="lede">Real ranges from finished jobs, before anyone comes out. Pick a room, a size and a finish level.</p>
+  <div class="est">
+    <form id="dform" onsubmit="return false">
+      <fieldset><legend>1 · The project</legend><div class="rooms" id="drooms"></div></fieldset>
+      <fieldset><legend>2 · Size</legend><input type="range" id="dsize" min="100" max="400" step="10" value="200" aria-describedby="dsizev"><div class="sizev" id="dsizev"></div></fieldset>
+      <fieldset><legend>3 · Finish level</legend><div class="tiers" id="dtiers"></div></fieldset>
+      <fieldset><legend>4 · Your town</legend><input id="dtown" type="text" value="Reading" autocomplete="address-level2"></fieldset>
+    </form>
+    <div class="out" aria-live="polite">
+      <div class="kick" style="color:#c9c1b4;margin:0">Typical range</div>
+      <div class="range" id="drange">$0</div>
+      <div class="weeks" id="dweeks"></div>
+      <div class="tl" id="dtl"></div>
+      <div class="msg" id="dmsg"></div>
+      <button class="btn call" type="button" id="dcopy">Copy this and text Kestrel</button>
+      <div class="note">Sample numbers for this demo. Your site uses ranges from your own finished jobs.</div>
+    </div>
+  </div>
+</div></section>
+
+<section class="band g" id="area"><div class="w">
+  <p class="kick">Where we build</p>
+  <h2 class="h2">Middlesex and Essex County.</h2>
+  <div class="area">
+    <div class="county"><h3>Middlesex</h3><div class="towns"><span>Reading</span><span>Wilmington</span><span>Burlington</span><span>Woburn</span><span>Stoneham</span><span>Wakefield</span><span>Melrose</span><span>Lexington</span><span>Billerica</span><span>Chelmsford</span><span>Tewksbury</span><span>North Reading</span></div></div>
+    <div class="county"><h3>Essex</h3><div class="towns"><span>Andover</span><span>North Andover</span><span>Lynnfield</span><span>Middleton</span><span>Boxford</span><span>Topsfield</span><span>Danvers</span><span>Peabody</span><span>Methuen</span><span>Haverhill</span></div></div>
+  </div>
+  <div class="closer" style="margin-top:56px">
+    <h2 class="h2">Your build starts with one call.</h2>
+    <p class="lede">Tell us the project and the town. We'll walk it with you this week.</p>
+    <div class="ctas" style="margin-top:18px"><a class="btn call" href="tel:+19785550142">Call (978) 555-0142</a><a class="btn line" href="#price">Price your project</a></div>
+  </div>
+</div></section>
+</main>
+
+<footer class="foot g"><div class="w">
+  <p><b style="color:var(--paper)">Kestrel Build Co.</b> · General contractor · (978) 555-0142</p>
+  <p>Demo site by IC Business Systems. Kestrel Build Co. is fictional; the phone number, reviews, prices and licence line are placeholders. The build animation is an illustration made from a real finished-house photo.</p>
+  <p>Photos from Unsplash: Tyrone Sanders (finished house; yard sign repainted), Zac Gudakov, Clay Banks, Point3D Commercial Imaging, Proper Construction, Jason Briscoe.</p>
+</div></footer>
+
+<div class="bar" id="bar"><a class="btn call" href="tel:+19785550142">Call</a><a class="btn line" href="#price">Get a price</a></div>
+
+<script>
+const $ = (s, r = document) => r.querySelector(s);
+const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- rise ---------- */
+const N = 198, cv = $('#cv'), cx = cv.getContext('2d'), frames = new Array(N);
+const STEPS = [0, .1, .26, .46, .64, .83, .97];
+let P = 0, loaded = 0;
+const load = i => new Promise(r => { if (frames[i]) return r(); const im = new Image(); im.decoding = 'async'; im.onload = () => { frames[i] = im; loaded++; r(); }; im.onerror = r; im.src = `../rise/b/${String(i).padStart(3, '0')}.webp`; });
+function size() { const d = Math.min(devicePixelRatio || 1, 2); cv.width = Math.round(innerWidth * d); cv.height = Math.round(innerHeight * d); draw(); }
+function nearest(i) { for (let k = 0; k < N; k++) { if (frames[i - k]) return frames[i - k]; if (frames[i + k]) return frames[i + k]; } return null; }
+function draw() {
+  const i = RM ? N - 1 : Math.round(P * (N - 1)); const im = frames[i] || nearest(i); if (!im) return;
+  const W = cv.width, H = cv.height;
+  cx.fillStyle = '#0d0f0c'; cx.fillRect(0, 0, W, H);
+  if (W / H >= 1) { const s = Math.max(W / im.width, H / im.height), w = im.width * s, h = im.height * s; cx.drawImage(im, (W - w) / 2, (H - h) * .5, w, h); }
+  else { const w = W * 1.42, h = w * im.height / im.width; cx.drawImage(im, W / 2 - w * .5, H * .38 - h * .5, w, h); }
+}
+function onScroll() {
+  const r = $('#rise'), total = r.offsetHeight - innerHeight;
+  P = Math.min(Math.max(-r.getBoundingClientRect().top / total, 0), 1);
+  const k = STEPS.filter(s => P >= s).length - 1;
+  $('#wk').textContent = 'Week ' + Math.round(P * 26);
+  [...$('#steps').children].forEach((el, j) => { el.className = j < k ? 'done' : j === k ? 'on' : ''; });
+  $('#prog').style.width = (P * 100) + '%';
+  $('#hint').style.opacity = P > .02 ? 0 : 1;
+  $('#top').classList.toggle('solid', r.getBoundingClientRect().bottom < 80);
+  $('#bar').classList.toggle('on', r.getBoundingClientRect().bottom < innerHeight * .6 && $('#price').getBoundingClientRect().top > innerHeight * .5 || $('#price').getBoundingClientRect().bottom < 0);
+  requestAnimationFrame(draw);
+}
+(async () => {
+  await load(0); size(); onScroll();
+  const order = []; for (const step of [32, 16, 8, 4, 2, 1]) for (let i = 0; i < N; i += step) if (!order.includes(i)) order.push(i);
+  if (!order.includes(N - 1)) order.splice(1, 0, N - 1);
+  for (let k = 0; k < order.length; k += 8) { await Promise.all(order.slice(k, k + 8).map(load)); $('#load').textContent = loaded < N ? `Loading the build ${Math.round(loaded / N * 100)}%` : ''; draw(); }
+  $('#load').textContent = '';
+})();
+addEventListener('resize', size); addEventListener('scroll', onScroll, { passive: true });
+
+/* ---------- B: blueprint sheets ---------- */
+const JOBS = [
+  { key: 'kitchen', img: 'img/kitchen.webp', name: 'Kitchen', town: 'Reading, MA', weeks: '8–10 wk', range: '$68k–$92k', scope: 'Gut to the studs, new island and range wall, opened up to the dining room.', dims: [["14'-2\"", 8, 10], ["9'-0\" CLG", 70, 6], ["ISLAND 4'-6\" × 9'", 30, 70]] },
+  { key: 'greatroom', img: 'img/greatroom.webp', name: 'Addition', town: 'Andover, MA', weeks: '16–20 wk', range: '$240k–$310k', scope: 'A 20 × 28 ft great room with a vaulted ceiling and a wall of windows.', dims: [["20'-0\" × 28'-0\"", 8, 8], ["VAULT 15'-4\"", 64, 14], ["WINDOW WALL", 40, 52]] },
+  { key: 'basement', img: 'img/basement.webp', name: 'Basement', town: 'Wilmington, MA', weeks: '6–8 wk', range: '$45k–$60k', scope: 'Framed, insulated and finished, with a laundry room and an egress window.', dims: [["24'-8\"", 10, 10], ["EGRESS", 70, 30], ["7'-6\" CLG", 40, 62]] },
+  { key: 'deck', img: 'img/deck2.webp', name: 'Deck', town: 'Lynnfield, MA', weeks: '3–4 wk', range: '$28k–$38k', scope: 'Composite deck with cable rail and steps down to the patio.', dims: [["16'-0\" × 20'-0\"", 8, 10], ["CABLE RAIL 36\"", 58, 30], ["STAIR 4 RISERS", 30, 74]] },
+];
+let bAnim = 0;
+function sobel(img, c2) {
+  const w = 900, h = Math.round(img.naturalHeight * w / img.naturalWidth);
+  c2.width = w; c2.height = h;
+  const c = c2.getContext('2d'); c.drawImage(img, 0, 0, w, h);
+  const d = c.getImageData(0, 0, w, h).data, gray = new Float32Array(w * h);
+  for (let i = 0; i < w * h; i++) gray[i] = d[i * 4] * .3 + d[i * 4 + 1] * .59 + d[i * 4 + 2] * .11;
+  const out = c.createImageData(w, h), o = out.data;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const i = y * w + x; let mag = 0;
+    if (x > 0 && y > 0 && x < w - 1 && y < h - 1) {
+      const gx = -gray[i - w - 1] - 2 * gray[i - 1] - gray[i + w - 1] + gray[i - w + 1] + 2 * gray[i + 1] + gray[i + w + 1];
+      const gy = -gray[i - w - 1] - 2 * gray[i - w] - gray[i - w + 1] + gray[i + w - 1] + 2 * gray[i + w] + gray[i + w + 1];
+      mag = Math.min(255, Math.hypot(gx, gy) * 1.1);
+    }
+    const grid = (x % 30 === 0 || y % 30 === 0) ? 18 : 0, a = mag > 60 ? Math.min(1, (mag - 60) / 120) : 0;
+    o[i * 4] = 14 + 193 * a + grid; o[i * 4 + 1] = 51 + 179 * a + grid; o[i * 4 + 2] = 89 + 166 * a + grid; o[i * 4 + 3] = 255;
+  }
+  c.putImageData(out, 0, 0);
+}
+function setWipe(v) { $('#bpc').style.clipPath = `inset(0 0 0 ${v}%)`; $('#bdims').style.clipPath = `inset(0 0 0 ${v}%)`; $('#bhandle').style.left = v + '%'; $('#bprange').value = v; }
+function wipe() {
+  cancelAnimationFrame(bAnim); if (RM) return setWipe(50);
+  const t0 = performance.now();
+  const step = now => { const k = Math.min(1, (now - t0) / 2200), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; setWipe(100 - e * 55); if (k < 1) bAnim = requestAnimationFrame(step); };
+  setWipe(100); bAnim = requestAnimationFrame(step);
+}
+let bSeen = false;
+function setB(j, animate) {
+  const img = $('#bimg');
+  img.onload = () => { sobel(img, $('#bpc')); animate ? wipe() : setWipe(100); };
+  img.src = j.img; img.alt = `Finished ${j.name.toLowerCase()} in ${j.town}`;
+  $('#bdims').innerHTML = j.dims.map(([t, x, y]) => `<span class="dim" style="left:${x}%;top:${y}%">${t}</span>`).join('');
+  $('#btitle').innerHTML = `<div>Project<b>${j.name}</b></div><div>Location<b>${j.town}</b></div><div>On site<b>${j.weeks}</b></div><div>Range<b>${j.range}</b></div>`;
+  $('#bscope').textContent = j.scope + ' (Sample project.)';
+  document.querySelectorAll('#bstrip .sh').forEach(s => s.setAttribute('aria-pressed', s.dataset.k === j.key ? 'true' : 'false'));
+}
+$('#bprange').addEventListener('input', e => { cancelAnimationFrame(bAnim); setWipe(+e.target.value); });
+JOBS.forEach(j => {
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'sh'; b.dataset.k = j.key;
+  b.innerHTML = `<img src="${j.img}" alt="" loading="lazy"><div><b>${j.name}</b>${j.town} · ${j.weeks}</div>`;
+  b.addEventListener('click', () => { setB(j, true); $('#bsheet').scrollIntoView({ block: 'center', behavior: RM ? 'auto' : 'smooth' }); });
+  $('#bstrip').appendChild(b);
+});
+setB(JOBS[0], false);
+new IntersectionObserver((es, ob) => { if (es[0].isIntersecting && !bSeen) { bSeen = true; wipe(); ob.disconnect(); } }, { threshold: .45 }).observe($('#bsheet'));
+
+/* ---------- how it goes: steps light up ---------- */
+const hio = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle('lit', e.isIntersecting)), { rootMargin: '-35% 0px -35% 0px' });
+document.querySelectorAll('#howlist li').forEach(li => hio.observe(li));
+
+/* ---------- D: estimator ---------- */
+const DR = [
+  { n: 'Kitchen', img: 'img/galley.webp', min: 100, max: 400, def: 200, rate: [260, 420, 640], base: [6, 9, 12] },
+  { n: 'Addition', img: 'img/greatroom.webp', min: 200, max: 800, def: 400, rate: [330, 430, 560], base: [12, 16, 20] },
+  { n: 'Basement', img: 'img/basement.webp', min: 300, max: 1200, def: 700, rate: [55, 85, 130], base: [4, 6, 8] },
+  { n: 'Deck', img: 'img/deck2.webp', min: 150, max: 600, def: 320, rate: [55, 80, 115], base: [2, 3, 4] },
+];
+const TIERS = [['Good', 'Solid, standard finishes'], ['Better', 'Most of our jobs'], ['Best', 'Custom, top materials']];
+DR.forEach((r, i) => $('#drooms').insertAdjacentHTML('beforeend', `<label><input type="radio" name="droom" id="droom${i}" value="${i}" ${i ? '' : 'checked'}><img src="${r.img}" alt="" loading="lazy"><span>${r.n}</span></label>`));
+TIERS.forEach(([t, s], i) => $('#dtiers').insertAdjacentHTML('beforeend', `<label><input type="radio" name="dtier" id="dtier${i}" value="${i}" ${i === 1 ? 'checked' : ''}><b>${t}</b><small>${s}</small></label>`));
+const PH = ['Design', 'Permits', 'Demo', 'Rough-in', 'Inspect', 'Finish'];
+$('#dtl').innerHTML = PH.map(p => `<div data-n="${p}"></div>`).join('');
+let shown = 0, target = 0, rollF = 0, lastRoom = -1;
+const money = v => '$' + Math.round(v / 1000) + 'k';
+function roll() { cancelAnimationFrame(rollF); const s = shown, t0 = performance.now(); const step = now => { const k = RM ? 1 : Math.min(1, (now - t0) / 650); shown = s + (target - s) * (1 - Math.pow(1 - k, 3)); $('#drange').textContent = `${money(shown * .88)} – ${money(shown * 1.12)}`; if (k < 1) rollF = requestAnimationFrame(step); }; rollF = requestAnimationFrame(step); }
+function calc() {
+  const ri = +document.querySelector('input[name=droom]:checked').value, ti = +document.querySelector('input[name=dtier]:checked').value, r = DR[ri], sz = $('#dsize');
+  if (ri !== lastRoom) { lastRoom = ri; sz.min = r.min; sz.max = r.max; sz.value = r.def; }
+  const size = +sz.value; $('#dsizev').textContent = `${size} sq ft`;
+  target = size * r.rate[ti]; roll();
+  const wk = Math.round(r.base[ti] + (size - r.min) / (r.max - r.min) * r.base[ti] * .6);
+  $('#dweeks').textContent = `About ${wk}–${wk + 2} weeks on site, after design and permits`;
+  const w = [2, ri === 3 ? 1.5 : 3, 1, 3, 1, ti + 3]; [...$('#dtl').children].forEach((d, k) => d.style.flexGrow = w[k]);
+  const town = $('#dtown').value.trim() || 'my town';
+  $('#dmsg').textContent = `Hi Kestrel, I'm in ${town}. Thinking about a ${r.n.toLowerCase()} (${size} sq ft, ${TIERS[ti][0].toLowerCase()} finishes). Your site showed ${money(target * .88)}–${money(target * 1.12)}. Can we talk?`;
+}
+$('#dform').addEventListener('input', calc); $('#dform').addEventListener('change', calc); calc();
+$('#dcopy').addEventListener('click', async () => { const t = $('#dmsg').textContent; try { await navigator.clipboard.writeText(t); $('#dcopy').textContent = 'Copied. Text it to (978) 555-0142'; } catch { const s = getSelection(), rg = document.createRange(); rg.selectNodeContents($('#dmsg')); s.removeAllRanges(); s.addRange(rg); $('#dcopy').textContent = 'Selected. Copy it and text (978) 555-0142'; } });
+</script>
+</body>
+</html>
