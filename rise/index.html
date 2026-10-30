@@ -77,9 +77,24 @@ function size() { const d = Math.min(devicePixelRatio || 1, 2); cv.width = inner
 function nearest(i) { for (let k = 0; k < N; k++) { if (frames[i - k]) return frames[i - k]; if (frames[i + k]) return frames[i + k]; } return null; }
 function draw(i) {
   const im = frames[i] || nearest(i); if (!im) return;
-  const W = cv.width, H = cv.height, s = Math.max(W / im.width, H / im.height), w = im.width * s, h = im.height * s;
-  const fx = .46; const x = Math.min(0, Math.max(W - w, W / 2 - w * fx));
-  cx.drawImage(im, x, (H - h) * .55, w, h); cur = i;
+  const W = cv.width, H = cv.height, fx = .46;
+  if (W / H >= 1) {
+    const s = Math.max(W / im.width, H / im.height), w = im.width * s, h = im.height * s;
+    cx.drawImage(im, Math.min(0, Math.max(W - w, W / 2 - w * fx)), (H - h) * .55, w, h);
+  } else {
+    // Phone: blurred cover fill behind, the frame itself sized to show most of the house.
+    const sb = Math.max(W / im.width, H / im.height);
+    cx.filter = 'blur(28px) brightness(.55) saturate(1.1)';
+    cx.drawImage(im, (W - im.width * sb) / 2, (H - im.height * sb) / 2, im.width * sb, im.height * sb);
+    cx.filter = 'none';
+    const h = H * .56, s = h / im.height, w = im.width * s, x = Math.min(0, Math.max(W - w, W / 2 - w * fx)), y = H * .2;
+    cx.drawImage(im, x, y, w, h);
+    const g1 = cx.createLinearGradient(0, y, 0, y + h * .14), g2 = cx.createLinearGradient(0, y + h * .86, 0, y + h);
+    g1.addColorStop(0, 'rgba(11,13,18,.9)'); g1.addColorStop(1, 'rgba(11,13,18,0)');
+    g2.addColorStop(0, 'rgba(11,13,18,0)'); g2.addColorStop(1, 'rgba(11,13,18,.9)');
+    cx.fillStyle = g1; cx.fillRect(0, y, W, h * .14); cx.fillStyle = g2; cx.fillRect(0, y + h * .86, W, h * .14);
+  }
+  cur = i;
 }
 function onScroll() {
   const r = document.getElementById('rise'), total = r.offsetHeight - innerHeight;
