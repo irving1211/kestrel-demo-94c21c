@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
-:root { color-scheme: dark; --ink: #0b0d12; --paper: #f4efe6; --muted: #b9b3a8; --signal: #ff6a2b; --lumber: #e0b679;
+:root { color-scheme: dark; --ink: #0d0f0c; --paper: #f4efe6; --muted: #b9b3a8; --signal: #ff6a2b; --lumber: #e0b679;
   --display: "Bricolage Grotesque", "Arial Narrow", system-ui, sans-serif; --body: "Instrument Sans", system-ui, sans-serif; --mono: "JetBrains Mono", ui-monospace, monospace; }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--ink); color: var(--paper); font-family: var(--body); }
@@ -58,7 +58,7 @@ canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block
     </div>
     <div class="hud">
       <div class="chip"><b id="wk">Week 0</b><span>on site</span></div>
-      <div class="steps" id="steps"><i>Staked lot</i><i>Foundation</i><i>Framing</i><i>Closed in</i><i>Move-in ready</i></div>
+      <div class="steps" id="steps"><i>Staked lot</i><i>Foundation</i><i>Framing</i><i>Closed in</i><i>Finishes</i><i>Move-in ready</i></div>
     </div>
     <div class="hint" id="hint">Scroll to build ↓</div>
     <div class="copy reveal" id="copy">
@@ -70,12 +70,12 @@ canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block
   </div>
 </section>
 <section class="after">
-  <h2>Rise · option A, version 3</h2>
-  <p>Five stages of the same house, built from one finished photo and locked to the same camera, so the house keeps its exact shape from the first stake to the lights coming on. Each stage rises up out of the ground into the next as you scroll; scroll back up and it comes apart. No video credits were used.</p>
-  <p>Kestrel Build Co. is fictional and the construction stages are an illustration. Finished-house photo by vu anh on Unsplash. <a href="../">Back to the four directions</a> · <a href="../rise-video/">the earlier video version</a></p>
+  <h2>Rise · option A, version 4</h2>
+  <p>Six stages of the same house, worked backwards from one real finished photo and locked to the same camera, so the house keeps its exact shape from the first stake to the lights coming on. Each stage rises up out of the ground into the next as you scroll; scroll back up and it comes apart. No video credits were used.</p>
+  <p>Kestrel Build Co. is fictional and the construction stages are an illustration. Finished-house photo by Tyrone Sanders on Unsplash (the yard sign was repainted for this fictional builder). <a href="../">Back to the four directions</a> · <a href="../rise-video/">the earlier video version</a></p>
 </section>
 <script>
-const N = 5, WEEKS = [0, 3, 8, 14, 26];
+const N = 6, WEEKS = [0, 3, 8, 15, 22, 26];
 const cv = document.getElementById('cv'), cx = cv.getContext('2d');
 const off = document.createElement('canvas'), ox = off.getContext('2d');
 const img = new Array(N);
@@ -130,7 +130,7 @@ function onScroll() {
 }
 (async () => {
   await load(0, 1280); size(); onScroll();
-  await Promise.all([1, 2, 3, 4].map(i => load(i, 1280))); draw();
+  await Promise.all([1, 2, 3, 4, 5].map(i => load(i, 1280))); draw();
   for (let i = 0; i < N; i++) await load(i, 2400);
   draw();
 })();
