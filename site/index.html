@@ -123,7 +123,7 @@ canvas#cv { position: absolute; inset: 0; width: 100%; height: 100%; display: bl
 @media (min-width: 900px) { .sheets { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 .sh { border: 1px solid #5d93c6; background: var(--bp-2); color: var(--bp-line); text-align: left; padding: 0; cursor: pointer; border-radius: 4px; overflow: hidden; font: inherit; }
 .sh[aria-pressed="true"] { border-color: #fff; box-shadow: 0 0 0 2px #fff inset; }
-.sh img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; filter: grayscale(1) contrast(1.2) brightness(.8) sepia(1) hue-rotate(170deg) saturate(2.4); transition: filter .4s; }
+.sh img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; filter: saturate(.75) brightness(.85); transition: filter .4s; }
 .sh[aria-pressed="true"] img, .sh:hover img { filter: none; }
 .sh div { padding: 10px; font-family: var(--mono); font-size: .66rem; letter-spacing: .04em; }
 .sh b { display: block; color: #fff; font-family: var(--body); font-size: .98rem; letter-spacing: 0; }
