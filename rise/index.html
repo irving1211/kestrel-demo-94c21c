@@ -4,19 +4,19 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>Kestrel Build Rise Test</title>
+<title>Kestrel Build Rise</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
-:root { color-scheme: dark; --ink: #0b0d12; --paper: #f4efe6; --muted: #b9b3a8; --signal: #ff6a2b; --lumber: #d3a86f;
+:root { color-scheme: dark; --ink: #0b0d12; --paper: #f4efe6; --muted: #b9b3a8; --signal: #ff6a2b; --lumber: #e0b679;
   --display: "Bricolage Grotesque", "Arial Narrow", system-ui, sans-serif; --body: "Instrument Sans", system-ui, sans-serif; --mono: "JetBrains Mono", ui-monospace, monospace; }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--ink); color: var(--paper); font-family: var(--body); }
-.rise { position: relative; height: 340vh; }
+.rise { position: relative; height: 520vh; }
 .stick { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; }
 canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-.shade { position: absolute; inset: 0; background: linear-gradient(#0b0d12cc 0%, transparent 22%, transparent 55%, #0b0d12ee 100%); pointer-events: none; }
+.shade { position: absolute; inset: 0; background: linear-gradient(#0b0d12d9 0%, transparent 20%, transparent 58%, #0b0d12f2 100%); pointer-events: none; }
 .bar { position: absolute; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: calc(14px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 14px max(16px, env(safe-area-inset-left, 0px)); }
 .logo { display: flex; gap: 10px; align-items: center; font-family: var(--display); font-weight: 800; }
 .logo svg { width: 28px; height: 28px; }
@@ -24,34 +24,42 @@ canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block
 .btn.call { background: var(--signal); color: #1a0d05; }
 .btn.line { border: 1.5px solid #fff; color: #fff; }
 .btn.sm { min-height: 44px; padding: 0 14px; }
-.chip { position: absolute; top: calc(78px + env(safe-area-inset-top, 0px)); left: max(16px, env(safe-area-inset-left, 0px)); display: grid; gap: 3px; padding: 10px 12px; background: #0b0d12bb; border: 1px solid #ffffff22; border-radius: 10px; backdrop-filter: blur(6px); }
-.chip b { font-family: var(--mono); font-size: 1.35rem; color: var(--lumber); line-height: 1; }
+.hud { position: absolute; top: calc(76px + env(safe-area-inset-top, 0px)); left: max(16px, env(safe-area-inset-left, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.chip { display: grid; gap: 3px; padding: 10px 12px; background: #0b0d12b3; border: 1px solid #ffffff1f; border-radius: 10px; backdrop-filter: blur(6px); }
+.chip b { font-family: var(--mono); font-size: 1.35rem; color: var(--lumber); line-height: 1; font-variant-numeric: tabular-nums; }
 .chip span { font-family: var(--mono); font-size: .64rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
-.phase { position: absolute; top: calc(78px + env(safe-area-inset-top, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); font-family: var(--mono); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; color: #fff; text-align: right; }
+.steps { display: grid; gap: 6px; justify-items: end; font-family: var(--mono); font-size: .66rem; letter-spacing: .12em; text-transform: uppercase; }
+.steps i { font-style: normal; color: #ffffff59; transition: color .3s; display: flex; gap: 8px; align-items: center; }
+.steps i::after { content: ""; width: 7px; height: 7px; border-radius: 50%; border: 1px solid currentColor; transition: background .3s; }
+.steps i.done { color: #ffffffb3; } .steps i.done::after { background: currentColor; }
+.steps i.on { color: #fff; } .steps i.on::after { background: var(--signal); border-color: var(--signal); box-shadow: 0 0 0 4px #ff6a2b40; }
 .copy { position: absolute; left: 0; right: 0; bottom: 0; padding: 22px max(18px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(18px, env(safe-area-inset-left, 0px)); }
 .copy h1 { margin: 0; font-family: var(--display); font-weight: 800; font-size: clamp(2.2rem, 9vw, 4.6rem); line-height: .95; letter-spacing: -.025em; max-width: 13ch; text-wrap: balance; }
 .copy p { margin: 10px 0 16px; color: #e7e1d6; max-width: 44ch; }
 .ctas { display: flex; flex-wrap: wrap; gap: 10px; }
-.reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease; }
-.reveal.on { opacity: 1; transform: none; }
+.reveal { opacity: 0; transform: translateY(16px); transition: opacity .7s ease, transform .7s ease; pointer-events: none; }
+.reveal.on { opacity: 1; transform: none; pointer-events: auto; }
 .hint { position: absolute; left: 0; right: 0; bottom: calc(28px + env(safe-area-inset-bottom, 0px)); text-align: center; font-family: var(--mono); font-size: .72rem; letter-spacing: .2em; text-transform: uppercase; transition: opacity .4s; }
 .prog { position: absolute; left: 0; bottom: 0; height: 3px; background: var(--signal); width: 0; }
-.after { padding: 48px max(18px, env(safe-area-inset-right, 0px)) 64px max(18px, env(safe-area-inset-left, 0px)); max-width: 760px; margin: 0 auto; color: var(--muted); }
+.after { padding: 48px max(18px, env(safe-area-inset-right, 0px)) 64px max(18px, env(safe-area-inset-left, 0px)); max-width: 760px; margin: 0 auto; color: var(--muted); line-height: 1.55; }
 .after h2 { color: var(--paper); font-family: var(--display); font-size: 1.6rem; margin: 0 0 8px; }
 .after a { color: var(--paper); }
+@media (prefers-reduced-motion: reduce) { .reveal { transition: none; } }
 </style>
 </head>
 <body>
 <section class="rise" id="rise">
   <div class="stick">
-    <canvas id="cv" aria-label="A house rising out of an empty lot, from foundation to finished home, as you scroll"></canvas>
+    <canvas id="cv" role="img" aria-label="A house rises out of an empty lot as you scroll: foundation, framing, closed in, finished"></canvas>
     <div class="shade"></div>
     <div class="bar">
       <div class="logo"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 16 16 5l13 11" fill="none" stroke="#ff6a2b" stroke-width="2.6" stroke-linejoin="round"/><path d="M7 14v13M12 14v13M17 14v13M22 14v13M26 15v12M5 27h23" stroke="#ff6a2b" stroke-width="2"/></svg>Kestrel Build Co.</div>
       <a class="btn call sm" href="tel:+19785550142">Call</a>
     </div>
-    <div class="chip"><b id="wk">Week 0</b><span>on site</span></div>
-    <div class="phase" id="phase">Staked lot</div>
+    <div class="hud">
+      <div class="chip"><b id="wk">Week 0</b><span>on site</span></div>
+      <div class="steps" id="steps"><i>Staked lot</i><i>Foundation</i><i>Framing</i><i>Closed in</i><i>Move-in ready</i></div>
+    </div>
     <div class="hint" id="hint">Scroll to build ↓</div>
     <div class="copy reveal" id="copy">
       <h1>From bare dirt to your front door.</h1>
@@ -62,58 +70,78 @@ canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block
   </div>
 </section>
 <section class="after">
-  <h2>Rise test · option A, version 2</h2>
-  <p>Scroll back up and the house un-builds. This is one 8-second Veo 3.1 Fast clip from Google Flow (20 credits), made between a real finished-house photo and a matching empty-lot frame, cut to 122 frames and played by your scroll. The final version would use Veo Quality and two or three linked clips.</p>
-  <p>Kestrel Build Co. is fictional and the build sequence is an illustration. House photo by vu anh on Unsplash. <a href="../">Back to the four directions</a></p>
+  <h2>Rise · option A, version 3</h2>
+  <p>Five stages of the same house, built from one finished photo and locked to the same camera, so the house keeps its exact shape from the first stake to the lights coming on. Each stage rises up out of the ground into the next as you scroll; scroll back up and it comes apart. No video credits were used.</p>
+  <p>Kestrel Build Co. is fictional and the construction stages are an illustration. Finished-house photo by vu anh on Unsplash. <a href="../">Back to the four directions</a> · <a href="../rise-video/">the earlier video version</a></p>
 </section>
 <script>
-const N = 122, cv = document.getElementById('cv'), cx = cv.getContext('2d');
-const frames = new Array(N);
+const N = 5, WEEKS = [0, 3, 8, 14, 26];
+const cv = document.getElementById('cv'), cx = cv.getContext('2d');
+const off = document.createElement('canvas'), ox = off.getContext('2d');
+const img = new Array(N);
 const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const PH = [[0, 'Staked lot'], [.12, 'Foundation'], [.22, 'Framing'], [.45, 'Roof + sheathing'], [.62, 'Siding + windows'], [.78, 'Lights on'], [.9, 'Move-in ready']];
-let cur = -1, want = 0;
-function load(i) { return new Promise(r => { if (frames[i]) return r(); const im = new Image(); im.decoding = 'async'; im.onload = () => { frames[i] = im; r(); }; im.onerror = r; im.src = `f/${String(i).padStart(3, '0')}.webp`; }); }
-function size() { const d = Math.min(devicePixelRatio || 1, 2); cv.width = innerWidth * d; cv.height = innerHeight * d; cur = -1; draw(want); }
-function nearest(i) { for (let k = 0; k < N; k++) { if (frames[i - k]) return frames[i - k]; if (frames[i + k]) return frames[i + k]; } return null; }
-function draw(i) {
-  const im = frames[i] || nearest(i); if (!im) return;
-  const W = cv.width, H = cv.height, fx = .46;
-  if (W / H >= 1) {
-    const s = Math.max(W / im.width, H / im.height), w = im.width * s, h = im.height * s;
-    cx.drawImage(im, Math.min(0, Math.max(W - w, W / 2 - w * fx)), (H - h) * .55, w, h);
-  } else {
-    // Phone: blurred cover fill behind, the frame itself sized to show most of the house.
-    const sb = Math.max(W / im.width, H / im.height);
-    cx.filter = 'blur(28px) brightness(.55) saturate(1.1)';
-    cx.drawImage(im, (W - im.width * sb) / 2, (H - im.height * sb) / 2, im.width * sb, im.height * sb);
-    cx.filter = 'none';
-    const h = H * .56, s = h / im.height, w = im.width * s, x = Math.min(0, Math.max(W - w, W / 2 - w * fx)), y = H * .2;
-    cx.drawImage(im, x, y, w, h);
-    const g1 = cx.createLinearGradient(0, y, 0, y + h * .14), g2 = cx.createLinearGradient(0, y + h * .86, 0, y + h);
-    g1.addColorStop(0, 'rgba(11,13,18,.9)'); g1.addColorStop(1, 'rgba(11,13,18,0)');
-    g2.addColorStop(0, 'rgba(11,13,18,0)'); g2.addColorStop(1, 'rgba(11,13,18,.9)');
-    cx.fillStyle = g1; cx.fillRect(0, y, W, h * .14); cx.fillStyle = g2; cx.fillRect(0, y + h * .86, W, h * .14);
+let P = 0;
+const load = (i, w) => new Promise(r => { const im = new Image(); im.decoding = 'async'; im.onload = () => { img[i] = im; r(); }; im.onerror = r; im.src = `s/s${i}-${w}.webp`; });
+function size() { const d = Math.min(devicePixelRatio || 1, 2); cv.width = Math.round(innerWidth * d); cv.height = Math.round(innerHeight * d); off.width = cv.width; off.height = cv.height; draw(); }
+// where the photo sits on screen (with a slow push-in across the whole scroll)
+function frame(im) {
+  const W = cv.width, H = cv.height, push = 1 + P * .07, fx = .45, fy = .55;
+  if (W / H >= 1) { const s = Math.max(W / im.width, H / im.height) * push, w = im.width * s, h = im.height * s; return { x: Math.min(0, Math.max(W - w, W / 2 - w * fx)), y: (H - h) * fy, w, h, phone: false }; }
+  const h = H * .62 * push, s = h / im.height, w = im.width * s;
+  return { x: Math.min(0, Math.max(W - w, W / 2 - w * fx)), y: H * .19 - (h - H * .62) / 2, w, h, phone: true };
+}
+function paint(ctx, im, f) { ctx.drawImage(im, f.x, f.y, f.w, f.h); }
+function draw() {
+  const base = img[0]; if (!base) return;
+  const W = cv.width, H = cv.height;
+  const pos = P * (N - 1), i = Math.min(Math.floor(pos), N - 2), t = RM ? Math.round(pos - i) : pos - i;
+  const A = img[i] || base, B = img[i + 1] || A, f = frame(A);
+  cx.clearRect(0, 0, W, H);
+  if (f.phone) { // blurred fill of the same stage behind the photo on tall screens
+    const s = Math.max(W / A.width, H / A.height); cx.filter = 'blur(30px) brightness(.5)';
+    cx.drawImage(A, (W - A.width * s) / 2, (H - A.height * s) / 2, A.width * s, A.height * s); cx.filter = 'none';
   }
-  cur = i;
+  paint(cx, A, f);
+  // next stage rises out of the ground: a soft edge sweeps from the bottom of the photo to the top
+  const e = Math.min(1, Math.max(0, (t - .08) / .84)), ease = e * e * (3 - 2 * e);
+  if (ease > 0) {
+    ox.clearRect(0, 0, W, H); paint(ox, B, f);
+    const edge = f.y + f.h * (1.06 - ease * 1.16), soft = f.h * .16;
+    const g = ox.createLinearGradient(0, edge - soft, 0, edge + soft);
+    g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,1)');
+    ox.globalCompositeOperation = 'destination-in'; ox.fillStyle = g; ox.fillRect(0, 0, W, H); ox.globalCompositeOperation = 'source-over';
+    cx.drawImage(off, 0, 0);
+    if (ease < 1) { // warm work-light line riding the edge
+      const lg = cx.createLinearGradient(0, edge - soft * .35, 0, edge + soft * .35);
+      lg.addColorStop(0, 'rgba(255,190,120,0)'); lg.addColorStop(.5, `rgba(255,190,120,${.18 * Math.sin(ease * Math.PI)})`); lg.addColorStop(1, 'rgba(255,190,120,0)');
+      cx.fillStyle = lg; cx.fillRect(f.x, edge - soft, f.w, soft * 2);
+    }
+  }
+  if (f.phone) {
+    for (const [y0, y1, a, b] of [[f.y, f.y + f.h * .12, .95, 0], [f.y + f.h * .88, f.y + f.h, 0, .95]]) {
+      const g = cx.createLinearGradient(0, y0, 0, y1); g.addColorStop(0, `rgba(11,13,18,${a})`); g.addColorStop(1, `rgba(11,13,18,${b})`); cx.fillStyle = g; cx.fillRect(0, y0, W, y1 - y0);
+    }
+  }
 }
 function onScroll() {
   const r = document.getElementById('rise'), total = r.offsetHeight - innerHeight;
-  const p = Math.min(Math.max(-r.getBoundingClientRect().top / total, 0), 1);
-  want = RM ? N - 1 : Math.round(p * (N - 1));
-  if (want !== cur) draw(want);
-  document.getElementById('wk').textContent = 'Week ' + Math.round(p * 26);
-  document.getElementById('phase').textContent = PH.filter(x => p >= x[0]).pop()[1];
-  document.getElementById('prog').style.width = (p * 100) + '%';
-  document.getElementById('hint').style.opacity = p > .04 ? 0 : 1;
-  document.getElementById('copy').classList.toggle('on', p > .86 || RM);
+  P = Math.min(Math.max(-r.getBoundingClientRect().top / total, 0), 1);
+  const pos = P * (N - 1), k = Math.min(N - 1, Math.round(pos));
+  const wk = Math.round(WEEKS[Math.floor(pos)] + (WEEKS[Math.min(N - 1, Math.floor(pos) + 1)] - WEEKS[Math.floor(pos)]) * (pos % 1));
+  document.getElementById('wk').textContent = 'Week ' + wk;
+  [...document.getElementById('steps').children].forEach((el, j) => { el.className = j < k ? 'done' : j === k ? 'on' : ''; });
+  document.getElementById('prog').style.width = (P * 100) + '%';
+  document.getElementById('hint').style.opacity = P > .03 ? 0 : 1;
+  document.getElementById('copy').classList.toggle('on', P > .9);
+  requestAnimationFrame(draw);
 }
 (async () => {
-  await load(0); size();
-  const order = []; for (let step of [16, 8, 4, 2, 1]) for (let i = 0; i < N; i += step) if (!order.includes(i)) order.push(i);
-  order.push(N - 1);
-  for (let k = 0; k < order.length; k += 6) { await Promise.all(order.slice(k, k + 6).map(load)); draw(want); }
+  await load(0, 1280); size(); onScroll();
+  await Promise.all([1, 2, 3, 4].map(i => load(i, 1280))); draw();
+  for (let i = 0; i < N; i++) await load(i, 2400);
+  draw();
 })();
-addEventListener('resize', size); addEventListener('scroll', onScroll, { passive: true }); onScroll();
+addEventListener('resize', size); addEventListener('scroll', onScroll, { passive: true });
 </script>
 </body>
 </html>
