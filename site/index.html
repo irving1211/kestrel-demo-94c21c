@@ -57,7 +57,15 @@ section.band { padding-block: 72px; }
 .top .right { display: flex; align-items: center; gap: 14px; }
 
 /* ---------- rise hero ---------- */
-.rise { position: relative; height: 520vh; }
+.rise { position: relative; height: 420vh; }
+#vid { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none; }
+.replay { display: none; }
+@media (min-width: 900px) {
+  .rise { height: 100vh; height: 100svh; }
+  #vid { display: block; } canvas#cv { display: none; }
+  .replay { display: inline-flex; color: #fff; }
+  .hint { display: none; }
+}
 .stick { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; }
 canvas#cv { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(transparent 55%, #0d0f0cf0 100%); }
@@ -103,6 +111,14 @@ canvas#cv { position: absolute; inset: 0; width: 100%; height: 100%; display: bl
 .tblock div:last-child { border-right: 0; }
 .tblock b { display: block; color: #fff; font-size: .78rem; overflow-wrap: anywhere; }
 .scope { margin: 14px 0 0; color: #cfe2f5; max-width: 60ch; }
+.workgrid { display: grid; gap: 0 36px; grid-template-columns: 1fr; }
+@media (min-width: 900px) {
+  .workgrid { grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); align-items: start; }
+  .workgrid .viewer { grid-column: 2; grid-row: 1 / span 2; }
+  .workgrid .sheets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sheetwrap { margin-top: 0; }
+  section.band { padding-block: 64px; }
+}
 .sheets { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 18px; }
 @media (min-width: 900px) { .sheets { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 .sh { border: 1px solid #5d93c6; background: var(--bp-2); color: var(--bp-line); text-align: left; padding: 0; cursor: pointer; border-radius: 4px; overflow: hidden; font: inherit; }
@@ -191,6 +207,7 @@ footer.foot p { margin: 0 0 8px; max-width: 80ch; }
 <main>
 <section class="rise" id="rise" aria-label="The build">
   <div class="stick">
+    <video id="vid" muted playsinline preload="auto" poster="poster.webp" aria-label="A house is built from a staked lot to a finished, landscaped home"></video>
     <canvas id="cv" role="img" aria-label="A house is built from a staked lot to a finished, landscaped home as you scroll"></canvas>
     <div class="shade"></div>
     <div class="hud">
@@ -200,7 +217,7 @@ footer.foot p { margin: 0 0 8px; max-width: 80ch; }
     <div class="herocopy g"><div class="w">
       <h1>From bare dirt to your front door.</h1>
       <p>New homes, additions, kitchens, basements and decks across Middlesex and Essex County. One crew, first stake to last light switch.</p>
-      <div class="ctas"><a class="btn call" href="tel:+19785550142">Call (978) 555-0142</a><a class="btn line" href="#price" style="color:#fff">Price your project</a></div>
+      <div class="ctas"><a class="btn call" href="tel:+19785550142">Call (978) 555-0142</a><a class="btn line" href="#price" style="color:#fff">Price your project</a><button class="btn line replay" type="button" id="replay">↻ Watch it build again</button></div>
       <div class="hint" id="hint">Scroll to build ↓</div>
       <div class="load" id="load"></div>
     </div></div>
@@ -218,7 +235,9 @@ footer.foot p { margin: 0 0 8px; max-width: 80ch; }
 <section class="band g" id="work"><div class="w">
   <p class="kick">Recent work</p>
   <h2 class="h2">Drawn first.<br><i>Then built.</i></h2>
-  <p class="lede">Every job starts on paper, so the price and the schedule hold. Drag across the drawing to see the finished room, or pick another project below.</p>
+  <div class="workgrid">
+  <div class="intro"><p class="lede">Every job starts on paper, so the price and the schedule hold. Drag across the drawing to see the finished room, or pick another project.</p></div>
+  <div class="viewer">
   <div class="sheetwrap" id="bsheet">
     <img id="bimg" alt="Finished project photo">
     <canvas id="bpc" aria-hidden="true"></canvas>
@@ -228,8 +247,10 @@ footer.foot p { margin: 0 0 8px; max-width: 80ch; }
   </div>
   <div class="tblock" id="btitle"></div>
   <p class="scope" id="bscope"></p>
-  <div class="sheets" id="bstrip"></div>
-  <div class="ctas" style="margin-top:22px"><a class="btn call" href="tel:+19785550142">Call about a project</a></div>
+  </div>
+  <div class="side"><div class="sheets" id="bstrip"></div>
+  <div class="ctas" style="margin-top:22px"><a class="btn call" href="tel:+19785550142">Call about a project</a></div></div>
+  </div>
 </div></section>
 
 <section class="band g" id="how"><div class="w">
@@ -295,22 +316,40 @@ const $ = (s, r = document) => r.querySelector(s);
 const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* ---------- rise ---------- */
-const N = 198, cv = $('#cv'), cx = cv.getContext('2d'), frames = new Array(N);
+const DESK = matchMedia('(min-width: 900px)');
+const N = 119, cv = $('#cv'), cx = cv.getContext('2d'), frames = new Array(N);
 const STEPS = [0, .1, .26, .46, .64, .83, .97];
 let P = 0, loaded = 0;
-const load = i => new Promise(r => { if (frames[i]) return r(); const im = new Image(); im.decoding = 'async'; im.onload = () => { frames[i] = im; loaded++; r(); }; im.onerror = r; im.src = `../rise/b/${String(i).padStart(3, '0')}.webp`; });
+const load = i => new Promise(r => { if (frames[i]) return r(); const im = new Image(); im.decoding = 'async'; im.onload = () => { frames[i] = im; loaded++; r(); }; im.onerror = r; im.src = `b/${String(i).padStart(3, '0')}.webp`; });
 function size() { const d = Math.min(devicePixelRatio || 1, 2); cv.width = Math.round(innerWidth * d); cv.height = Math.round(innerHeight * d); draw(); }
 function nearest(i) { for (let k = 0; k < N; k++) { if (frames[i - k]) return frames[i - k]; if (frames[i + k]) return frames[i + k]; } return null; }
 function draw() {
+  if (DESK.matches) return;
+  cx.imageSmoothingQuality = 'high';
   const i = RM ? N - 1 : Math.round(P * (N - 1)); const im = frames[i] || nearest(i); if (!im) return;
   const W = cv.width, H = cv.height;
   cx.fillStyle = '#0d0f0c'; cx.fillRect(0, 0, W, H);
   if (W / H >= 1) { const s = Math.max(W / im.width, H / im.height), w = im.width * s, h = im.height * s; cx.drawImage(im, (W - w) / 2, (H - h) * .5, w, h); }
   else { const w = W * 1.42, h = w * im.height / im.width; cx.drawImage(im, W / 2 - w * .5, H * .38 - h * .5, w, h); }
 }
+function hud(p) {
+  const k = STEPS.filter(s => p >= s).length - 1;
+  $('#wk').textContent = 'Week ' + Math.round(p * 26);
+  [...$('#steps').children].forEach((el, j) => { el.className = j < k ? 'done' : j === k ? 'on' : ''; });
+  $('#prog').style.width = (p * 100) + '%';
+}
 function onScroll() {
-  const r = $('#rise'), total = r.offsetHeight - innerHeight;
+  const r = $('#rise'), total = Math.max(1, r.offsetHeight - innerHeight);
+  $('#top').classList.toggle('solid', r.getBoundingClientRect().bottom < 80);
+  $('#bar').classList.toggle('on', r.getBoundingClientRect().bottom < innerHeight * .6 && $('#price').getBoundingClientRect().top > innerHeight * .5 || $('#price').getBoundingClientRect().bottom < 0);
+  if (DESK.matches) return;
   P = Math.min(Math.max(-r.getBoundingClientRect().top / total, 0), 1);
+  hud(P);
+  $('#hint').style.opacity = P > .02 ? 0 : 1;
+  requestAnimationFrame(draw);
+}
+function oldScroll() {
+  const r = $('#rise'), total = r.offsetHeight - innerHeight;
   const k = STEPS.filter(s => P >= s).length - 1;
   $('#wk').textContent = 'Week ' + Math.round(P * 26);
   [...$('#steps').children].forEach((el, j) => { el.className = j < k ? 'done' : j === k ? 'on' : ''; });
@@ -320,7 +359,18 @@ function onScroll() {
   $('#bar').classList.toggle('on', r.getBoundingClientRect().bottom < innerHeight * .6 && $('#price').getBoundingClientRect().top > innerHeight * .5 || $('#price').getBoundingClientRect().bottom < 0);
   requestAnimationFrame(draw);
 }
+// Desktop: the build plays by itself in one screen (sharp 1080p video), HUD follows the video.
+const vid = $('#vid');
+function startVideo() {
+  if (!vid.src) vid.src = 'build-1080.mp4';
+  if (RM) { vid.addEventListener('loadedmetadata', () => { vid.currentTime = vid.duration; hud(1); }, { once: true }); return; }
+  vid.currentTime = 0; vid.play().catch(() => {});
+}
+vid.addEventListener('timeupdate', () => { if (vid.duration) hud(vid.currentTime / vid.duration); });
+vid.addEventListener('ended', () => hud(1));
+$('#replay').addEventListener('click', () => { vid.currentTime = 0; vid.play().catch(() => {}); });
 (async () => {
+  if (DESK.matches) { startVideo(); onScroll(); return; }
   await load(0); size(); onScroll();
   const order = []; for (const step of [32, 16, 8, 4, 2, 1]) for (let i = 0; i < N; i += step) if (!order.includes(i)) order.push(i);
   if (!order.includes(N - 1)) order.splice(1, 0, N - 1);
